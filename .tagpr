@@ -1,0 +1,6 @@
+[tagpr]
+	vPrefix = true
+	releaseBranch = main
+	versionFile = gradle.properties
+	changelog = true
+	release = draft

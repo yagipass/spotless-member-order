@@ -1,0 +1,17 @@
+.work
+.direnv/
+.pre-commit-config.yaml
+
+.gradle/
+build/
+bin/
+
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.factorypath
+.vscode/
+
+.DS_Store
