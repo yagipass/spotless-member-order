@@ -32,7 +32,7 @@ class ReadmeTest {
       assertTrue(
           testedBuildFiles.stream()
               .anyMatch(file -> Collections.indexOfSubList(file, snippet) >= 0),
-          "This README snippet is not part of any build file in src/integrationTest/resources:\n"
+          "This README snippet is not part of any build file in modules/it/src/test/resources:\n"
               + snippets.group(1));
       checked.add(snippets.group(1));
     }

@@ -10,11 +10,13 @@ The build has not been tried on Windows.
 
 ## Build and test
 
+The library is in `modules/plugin`, the integration tests in `modules/it`, and the build settings they share in `build-logic`.
+
 | Command | Purpose |
 |---|---|
 | `./gradlew build` | compile, check formatting, run the unit and integration tests, and build the jars |
-| `./gradlew test` | unit tests only |
-| `./gradlew integrationTest` | integration tests only (`src/integrationTest`) |
+| `./gradlew :plugin:test` | unit tests only |
+| `./gradlew :it:test` | integration tests only |
 | `./gradlew spotlessApply` | format Java |
 | `./gradlew publishToMavenLocal` | install the library into the local Maven repository to try it in another project; it is signed only when `signingInMemoryKey` is set |
 | `nix fmt` | format Nix |
@@ -24,23 +26,23 @@ CI runs `./gradlew build` on JDK 21 and JDK 25. To do the same locally, run it a
 
 ### Unit test fixtures
 
-Each directory in `src/test/resources/fixtures` is one case: `input.java`, the `expected.java` that sorting must produce (leave it out when the input must stay unchanged), and an optional `settings.properties` that may set `categoryOrder`, `visibilityOrder`, and `sortFields`, with the defaults from the README. Any other key fails the test. Every input is also sorted twice with four different settings to check that the second run changes nothing.
+Each directory in `modules/plugin/src/test/resources/fixtures` is one case: `input.java`, the `expected.java` that sorting must produce (leave it out when the input must stay unchanged), and an optional `settings.properties` that may set `categoryOrder`, `visibilityOrder`, and `sortFields`, with the defaults from the README. Any other key fails the test. Every input is also sorted twice with four different settings to check that the second run changes nothing.
 
 ### Integration tests
 
-`./gradlew integrationTest` publishes the library to `build/integration-test/repository`, then runs Spotless in small consumer projects made from `src/integrationTest/resources`:
+`./gradlew :it:test` publishes the library to `modules/plugin/build/integration-test-repository`, then runs Spotless in small consumer projects made from `modules/it/src/test/resources`:
 
-- Gradle through TestKit, with its own Gradle user home in `build/integration-test/work/gradle-test-kit`.
-- Maven through the distribution that Gradle downloads (`apache-maven` in `gradle/libs.versions.toml`), with its local repository in `build/integration-test/work/maven-repository` and a generated settings file. `~/.m2/settings.xml` is not read.
+- Gradle through TestKit, with its own Gradle user home in `modules/it/build/work/gradle-test-kit`.
+- Maven through the distribution that Gradle downloads (`apache-maven` in `gradle/libs.versions.toml`), with its local repository in `modules/it/build/work/maven-repository` and a generated settings file. `~/.m2/settings.xml` is not read.
 
 Each scenario directory holds a Gradle build, a Maven build, and the `expected.java` that both must produce from `input.java`, except `toggle-off-on`, which holds only a Gradle build, expects `defaults/expected.java`, and also checks that its `Fenced.java` stays unchanged. The build files are the README examples: `ReadmeTest` fails if a README snippet is not part of one of them, so change both together. `<version>` and `<spotless-version>` in `build.gradle.kts` are replaced when the test copies it.
 
-The first run downloads Spotless, google-java-format and their dependencies, so it needs network access. To run one class, use `./gradlew integrationTest --tests '*MavenConsumerTest'`.
+The first run downloads Spotless, google-java-format and their dependencies, so it needs network access. To run one class, use `./gradlew :it:test --tests '*MavenConsumerTest'`.
 
 ## Rules
 
 - `./gradlew build` fails on unformatted Java and on any javac (`-Xlint:all -Werror`) or Error Prone warning, NullAway included. Every package, test packages too, needs a `package-info.java` with `@NullMarked`.
-- Test fixtures in `src/test/resources` and `src/integrationTest/resources` are neither formatted nor touched by the whitespace hooks, and git checks them out with LF line endings. A fixture that needs CRLF line endings goes in `src/test/resources/fixtures/crlf/<case>/`; git keeps those files byte for byte.
+- Test fixtures in `modules/plugin/src/test/resources` and `modules/it/src/test/resources` are neither formatted nor touched by the whitespace hooks, and git checks them out with LF line endings. A fixture that needs CRLF line endings goes in `modules/plugin/src/test/resources/fixtures/crlf/<case>/`; git keeps those files byte for byte.
 - Commit messages follow Conventional Commits, checked by the `commit-msg` hook.
 
 ## Proposing a change

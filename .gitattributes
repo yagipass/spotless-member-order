@@ -1,4 +1,4 @@
 * text=auto eol=lf
 *.bat text eol=crlf
 *.jar binary
-src/test/resources/**/crlf/** -text
+modules/plugin/src/test/resources/**/crlf/** -text
