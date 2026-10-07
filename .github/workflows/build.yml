@@ -91,5 +91,5 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TAG: ${{ needs.tagpr.outputs.tag }}
         run: |
-          gh release upload "$TAG" "build/libs/spotless-member-order-${TAG#v}.jar"
+          gh release upload "$TAG" "modules/plugin/build/libs/spotless-member-order-${TAG#v}.jar"
           gh release edit "$TAG" --draft=false

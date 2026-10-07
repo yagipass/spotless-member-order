@@ -35,7 +35,7 @@
         { config, pkgs, ... }:
         let
           jdk = pkgs.jdk25;
-          fixtures = "^src/(test|integrationTest)/resources/";
+          fixtures = "^modules/(plugin|it)/src/test/resources/";
         in
         {
           treefmt = {

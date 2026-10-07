@@ -48,7 +48,7 @@ final class Environment {
       throw new IllegalStateException(
           "System property "
               + name
-              + " is not set. Run the integration tests with ./gradlew integrationTest.");
+              + " is not set. Run the integration tests with ./gradlew :it:test.");
     }
     return value;
   }
