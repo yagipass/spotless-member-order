@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.yagipass.memberorder.MemberOrderStep;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class MemberOrderStepFactoryTest {
 
@@ -16,48 +14,20 @@ class MemberOrderStepFactoryTest {
   }
 
   @Test
-  void xmlSettingsReachTheStepAsIfSetThroughTheBuilder() {
+  void xmlOrderReachesTheStepAsIfSetThroughTheBuilder() {
     MemberOrderStepFactory factory = new MemberOrderStepFactory();
-    factory.setCategoryOrder("SF,SI,F,I,C,M,SM,T");
-    factory.setVisibilityOrder("B,R,D,V");
-    factory.setSortFields("true");
+    factory.setOrder("T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V,M:V");
 
     assertEquals(
-        MemberOrderStep.builder()
-            .categoryOrder("SF,SI,F,I,C,M,SM,T")
-            .visibilityOrder("B,R,D,V")
-            .sortFields(true)
-            .build(),
+        MemberOrderStep.builder().order("T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V,M:V").build(),
         factory.newFormatterStep(null));
   }
 
   @Test
-  void invalidXmlSettingFailsTheMavenBuild() {
+  void invalidXmlOrderFailsTheMavenBuild() {
     MemberOrderStepFactory factory = new MemberOrderStepFactory();
-    factory.setVisibilityOrder("B,V");
+    factory.setOrder("T,SF");
 
     assertThrows(IllegalArgumentException.class, () -> factory.newFormatterStep(null));
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"TRUE", "True", "FALSE", "False"})
-  void sortFieldsIgnoresCaseLikeMavenBooleanParameters(String value) {
-    MemberOrderStepFactory factory = new MemberOrderStepFactory();
-    factory.setSortFields(value);
-
-    assertEquals(
-        MemberOrderStep.builder().sortFields(Boolean.parseBoolean(value)).build(),
-        factory.newFormatterStep(null));
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"yes", "1", "on", "ture"})
-  void sortFieldsOtherThanTrueOrFalseFailsInsteadOfSilentlyMeaningFalse(String value) {
-    IllegalArgumentException error =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> new MemberOrderStepFactory().setSortFields(value));
-
-    assertEquals("sortFields \"" + value + "\" is invalid: use true or false.", error.getMessage());
   }
 }

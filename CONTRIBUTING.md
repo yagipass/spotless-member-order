@@ -26,7 +26,7 @@ CI runs `./gradlew build` on JDK 21 and JDK 25. To do the same locally, run it a
 
 ### Unit test fixtures
 
-Each directory in `modules/plugin/src/test/resources/fixtures` is one case: `input.java`, the `expected.java` that sorting must produce (leave it out when the input must stay unchanged), and an optional `settings.properties` that may set `categoryOrder`, `visibilityOrder`, and `sortFields`, with the defaults from the README. Any other key fails the test. Every input is also sorted twice with four different settings to check that the second run changes nothing.
+Each directory in `modules/plugin/src/test/resources/fixtures` is one case: `input.java`, the `expected.java` that sorting must produce (leave it out when the input must stay unchanged), and an optional `settings.properties` that may set `order`, with the default from the README. Any other key fails the test. Every input is also sorted twice with four different settings to check that the second run changes nothing.
 
 ### Integration tests
 

@@ -5,18 +5,21 @@ import java.util.List;
 
 public class Example {
 
-    public static final List<String> NAMES = new ArrayList<>();
+    record Entry(String message) {
+    }
 
     static final int LIMIT = 10;
+
+    public static final List<String> NAMES = new ArrayList<>();
 
     static {
         NAMES.add("example");
     }
 
+    private final List<String> messages = new ArrayList<>();
+
     // Prepended to every message.
     public final String prefix;
-
-    private final List<String> messages = new ArrayList<>();
 
     public Example(String prefix) {
         this.prefix = prefix;
@@ -37,8 +40,5 @@ public class Example {
 
     private void log(String message) {
         messages.add(prefix + message);
-    }
-
-    record Entry(String message) {
     }
 }

@@ -24,18 +24,20 @@ class MemberSorterFixtureTest {
 
   private static final Path FIXTURES = fixturesDirectory();
 
-  private static final List<String> SETTING_NAMES =
-      List.of("categoryOrder", "visibilityOrder", "sortFields");
+  private static final List<String> SETTING_NAMES = List.of("order");
 
   private static final List<Named<MemberOrder>> OTHER_SETTINGS =
       List.of(
+          Named.of("the default order", MemberOrder.parse(MemberOrder.DEFAULT_ORDER)),
           Named.of(
-              "the default settings",
-              MemberOrder.parse(MemberOrder.DEFAULT_CATEGORY_ORDER, null, false)),
-          Named.of("reversed orders", MemberOrder.parse("M,C,I,F,SM,SI,SF,T", "V,D,R,B", false)),
+              "a reversed order split by visibility",
+              MemberOrder.parse(
+                  "M:V,M:D,M:R,M:B,C:V,C:D,C:R,C:B,F,SM:V,SM:D,SM:R,SM:B,SF,T:V,T:D,T:R,T:B")),
           Named.of(
-              "sortFields and a visibility order",
-              MemberOrder.parse(MemberOrder.DEFAULT_CATEGORY_ORDER, "B,R,D,V", true)));
+              "an order that also reorders fields and initializers",
+              MemberOrder.parse(
+                  "T:B,T:R,T:D,T:V,SF:B,SF:R,SF:D,SF:V,SI,SM:B,SM:R,SM:D,SM:V,"
+                      + "F:B,F:R,F:D,F:V,I,C:B,C:R,C:D,C:V,M:B,M:R,M:D,M:V")));
 
   static List<String> fixtures() throws IOException {
     try (Stream<Path> files = Files.walk(FIXTURES)) {
@@ -109,14 +111,7 @@ class MemberSorterFixtureTest {
                 + ", but only "
                 + SETTING_NAMES
                 + " exist");
-    String sortFields = settings.getProperty("sortFields", "false");
-    assertTrue(
-        sortFields.equals("true") || sortFields.equals("false"),
-        () -> file + " sets sortFields to \"" + sortFields + "\" instead of true or false");
-    return MemberOrder.parse(
-        settings.getProperty("categoryOrder", MemberOrder.DEFAULT_CATEGORY_ORDER),
-        settings.getProperty("visibilityOrder"),
-        Boolean.parseBoolean(sortFields));
+    return MemberOrder.parse(settings.getProperty("order", MemberOrder.DEFAULT_ORDER));
   }
 
   private static String input(String fixture) throws IOException {

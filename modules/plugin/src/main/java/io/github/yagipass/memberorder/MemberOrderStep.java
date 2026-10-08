@@ -4,7 +4,6 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import java.io.Serializable;
 import java.util.Objects;
-import org.jspecify.annotations.Nullable;
 
 public final class MemberOrderStep {
 
@@ -22,30 +21,18 @@ public final class MemberOrderStep {
 
   public static final class Builder {
 
-    private String categoryOrder = MemberOrder.DEFAULT_CATEGORY_ORDER;
-    private @Nullable String visibilityOrder;
-    private boolean sortFields;
+    private String order = MemberOrder.DEFAULT_ORDER;
 
     private Builder() {}
 
-    public Builder categoryOrder(String categoryOrder) {
-      this.categoryOrder = Objects.requireNonNull(categoryOrder, "categoryOrder");
-      return this;
-    }
-
-    public Builder visibilityOrder(String visibilityOrder) {
-      this.visibilityOrder = Objects.requireNonNull(visibilityOrder, "visibilityOrder");
-      return this;
-    }
-
-    public Builder sortFields(boolean sortFields) {
-      this.sortFields = sortFields;
+    public Builder order(String order) {
+      this.order = Objects.requireNonNull(order, "order");
       return this;
     }
 
     public FormatterStep build() {
-      MemberOrder order = MemberOrder.parse(categoryOrder, visibilityOrder, sortFields);
-      return FormatterStep.create(NAME, new State(LibraryVersion.VALUE, order), State::toFormatter);
+      return FormatterStep.create(
+          NAME, new State(LibraryVersion.VALUE, MemberOrder.parse(order)), State::toFormatter);
     }
   }
 

@@ -86,8 +86,7 @@ class MavenConsumerTest {
   @CsvSource(
       delimiter = '|',
       value = {
-        "<categoryOrder>SF,SI,F,I,C,SM,M,T</categoryOrder> | <categoryOrder>SF,SI,F,I,C,SM,M</categoryOrder> | categoryOrder \"SF,SI,F,I,C,SM,M\" is invalid: missing T.",
-        "<sortFields>true</sortFields> | <sortFields>yes</sortFields> | sortFields \"yes\" is invalid: use true or false.",
+        "<order>T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V,M:V</order> | <order>T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V</order> | order \"T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V\" is invalid: missing M:V.",
       })
   void invalidXmlSettingFailsTheBuildWithAMessageThatNamesTheSettingAndTheProblem(
       String validElement, String invalidElement, String message) throws Exception {

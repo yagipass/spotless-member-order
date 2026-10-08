@@ -18,9 +18,7 @@ spotless {
     java {
         addStep(
             MemberOrderStep.builder()
-                .categoryOrder("SF,SI,F,I,C,SM,M,T")
-                .visibilityOrder("B,R,D,V")
-                .sortFields(true)
+                .order("T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V,M:V")
                 .build()
         )
     }
