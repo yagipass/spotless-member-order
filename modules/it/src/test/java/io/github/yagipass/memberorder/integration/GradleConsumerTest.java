@@ -93,14 +93,17 @@ class GradleConsumerTest {
     Files.writeString(
         initScript(),
         """
-                allprojects {
-                    buildscript.repositories.exclusiveContent {
-                        forRepository {
-                            buildscript.repositories.maven("%s")
+                settingsEvaluated {
+                    pluginManagement.repositories {
+                        exclusiveContent {
+                            forRepository {
+                                maven("%s")
+                            }
+                            filter {
+                                includeModule("io.github.yagipass", "spotless-member-order")
+                            }
                         }
-                        filter {
-                            includeModule("io.github.yagipass", "spotless-member-order")
-                        }
+                        gradlePluginPortal()
                     }
                 }
                 """
