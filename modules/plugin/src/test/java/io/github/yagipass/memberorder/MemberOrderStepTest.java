@@ -58,11 +58,7 @@ class MemberOrderStepTest {
 
   @Test
   void builtStepAppliesItsSettings() throws Exception {
-    FormatterStep step =
-        MemberOrderStep.builder()
-            .categoryOrder("M,C,SM,SF,SI,F,I,T")
-            .visibilityOrder("B,R,D,V")
-            .build();
+    FormatterStep step = MemberOrderStep.builder().order("M:BRD,M:V,C,SM,SF,F,T").build();
     String expected =
         """
                 class Example {
@@ -83,15 +79,14 @@ class MemberOrderStepTest {
   void createIsTheBuilderWithTheDocumentedDefaultsSoSpellingThemOutKeepsTheSameStepAndItsCaches() {
     assertEquals(MemberOrderStep.builder().build(), MemberOrderStep.create());
     assertEquals(
-        MemberOrderStep.builder().categoryOrder("T,SF,SI,SM,F,I,C,M").sortFields(false).build(),
-        MemberOrderStep.create());
+        MemberOrderStep.builder().order("T,SF,SM,F,C,M").build(), MemberOrderStep.create());
   }
 
   @Test
   void stepStillEqualsAndFormatsAfterJavaSerializationBecauseGradleAndMavenCacheIt()
       throws Exception {
     FormatterStep step =
-        MemberOrderStep.builder().visibilityOrder("B,R,D,V").sortFields(true).build();
+        MemberOrderStep.builder().order("T,SF:BRD,SF:V,SI,SM,F,C,M:BRD,M:V").build();
 
     FormatterStep copy = deserialize(serialize(step));
 
@@ -102,16 +97,8 @@ class MemberOrderStepTest {
 
   @Test
   void equivalentSettingsGiveEqualStepsSoCosmeticBuildChangesKeepCachesValid() {
-    FormatterStep compact =
-        MemberOrderStep.builder()
-            .categoryOrder("T,SF,SI,SM,F,I,C,M")
-            .visibilityOrder("B,R,D,V")
-            .build();
-    FormatterStep spaced =
-        MemberOrderStep.builder()
-            .categoryOrder(" T, SF, SI, SM, F, I, C, M ")
-            .visibilityOrder("B, R, D, V")
-            .build();
+    FormatterStep compact = MemberOrderStep.builder().order("T,SF,SM,F,C,M:BRD,M:V").build();
+    FormatterStep spaced = MemberOrderStep.builder().order(" T, SF, SM, F, C, M:BRD, M:V ").build();
 
     assertEquals(compact, spaced);
     assertEquals(compact.hashCode(), spaced.hashCode());
@@ -121,13 +108,12 @@ class MemberOrderStepTest {
   void differentSettingsGiveDifferentStepsSoCachedResultsAreNotReused() {
     FormatterStep defaults = MemberOrderStep.create();
 
+    assertNotEquals(defaults, MemberOrderStep.builder().order("SF,F,C,M,SM,T").build());
+    assertNotEquals(defaults, MemberOrderStep.builder().order("T,SF,SM,F,C,M:BRD,M:V").build());
     assertNotEquals(
-        defaults, MemberOrderStep.builder().categoryOrder("SF,SI,F,I,C,M,SM,T").build());
-    assertNotEquals(defaults, MemberOrderStep.builder().visibilityOrder("B,R,D,V").build());
-    assertNotEquals(
-        MemberOrderStep.builder().visibilityOrder("B,R,D,V").build(),
-        MemberOrderStep.builder().visibilityOrder("V,D,R,B").build());
-    assertNotEquals(defaults, MemberOrderStep.builder().sortFields(true).build());
+        MemberOrderStep.builder().order("T,SF,SM,F,C,M:BRD,M:V").build(),
+        MemberOrderStep.builder().order("T,SF,SM,F,C,M:V,M:BRD").build());
+    assertNotEquals(defaults, MemberOrderStep.builder().order("T,SF,SI,SM,F,I,C,M").build());
   }
 
   @Test
@@ -143,11 +129,7 @@ class MemberOrderStepTest {
   @Test
   void invalidSettingsFailWhenTheStepIsBuiltRatherThanWhenFilesAreFormatted() {
     assertThrows(
-        IllegalArgumentException.class,
-        () -> MemberOrderStep.builder().categoryOrder("T,SF").build());
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> MemberOrderStep.builder().visibilityOrder("B,V").build());
+        IllegalArgumentException.class, () -> MemberOrderStep.builder().order("T,SF").build());
   }
 
   private static byte[] serialize(FormatterStep step) throws IOException {

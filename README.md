@@ -131,25 +131,21 @@ spotless {
 
 ## Configuration
 
-| Setting | Default | |
-|---|---|---|
-| `categoryOrder` | `T,SF,SI,SM,F,I,C,M` | Order of the categories (Eclipse's default) |
-| `visibilityOrder` | not set | Order of the visibilities within each category. When not set, visibility does not affect the order |
-| `sortFields` | `false` | Also reorder fields and initializers. See [Fields and initializers](#fields-and-initializers) |
+`order` sets the order of the members. The default, `T,SF,SM,F,C,M`, follows Eclipse's default order and ignores visibility.
 
 Categories: `T` member types, `SF` static fields, `SI` static initializers, `SM` static methods, `F` instance fields, `I` instance initializers, `C` constructors, `M` methods and annotation type elements.
 Visibilities: `B` public, `R` protected, `D` package-private, `V` private.
 
-Each order lists every code exactly once, separated by commas, and `sortFields` is `true` or `false`. Anything else fails the build with a message saying what is wrong. In Maven, an empty element, or one that holds an undefined property, counts as not set.
+`order` is a list of entries separated by commas. An entry is a category, such as `M` for all methods, or a category and some visibilities, such as `M:BRD` for the methods that are not private. Every category and visibility pair must be in exactly one entry, except that `SI` and `I` can be left out (see [Fields and initializers](#fields-and-initializers)). Visibilities are written in `B,R,D,V` order. Members in the same entry keep their source order. Anything else fails the build with a message saying what is wrong. In Maven, an empty element, or one that holds an undefined property, counts as not set.
+
+This order puts private types and constructors after the others, and private static and instance methods after all other methods:
 
 ```kotlin
 spotless {
     java {
         addStep(
             MemberOrderStep.builder()
-                .categoryOrder("SF,SI,F,I,C,SM,M,T")
-                .visibilityOrder("B,R,D,V")
-                .sortFields(true)
+                .order("T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V,M:V")
                 .build()
         )
     }
@@ -158,9 +154,7 @@ spotless {
 
 ```xml
 <memberOrder>
-  <categoryOrder>SF,SI,F,I,C,SM,M,T</categoryOrder>
-  <visibilityOrder>B,R,D,V</visibilityOrder>
-  <sortFields>true</sortFields>
+  <order>T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V,M:V</order>
 </memberOrder>
 ```
 
@@ -168,20 +162,21 @@ Members of interfaces and annotation types count as public unless declared priva
 
 ### Fields and initializers
 
-Field initializers and initializer blocks run in source order, so moving them can change what a program does, or stop it compiling (`int x = y; int y = 1;`). By default (`sortFields` false):
+Field initializers and initializer blocks run in source order, so moving them can change what a program does, or stop it compiling (`int x = y; int y = 1;`). They move only when `order` asks for it:
 
-- static initializers are ordered as static fields (`SF`), and instance initializers as instance fields (`F`). `SI` and `I` have no effect.
-- fields and initializers are not ordered by visibility.
+- If `SF` is one entry and `SI` is left out, static fields and static initializers stay together at the place of `SF`, in source order. The same goes for `F` and `I`.
+- Listing `SI`, or splitting `SF` by visibility, orders static fields and static initializers like any other members. A split `SF` needs `SI` to be listed, so that static initializers have a place. The same goes for `F` and `I`.
 
-So static fields and static initializers keep their relative order, and so do instance fields and instance initializers. Static and instance members may still move relative to each other, which does not change behavior: static ones run when the class is initialized, instance ones when an object is created.
+Static and instance members may move relative to each other either way, which does not change behavior: static ones run when the class is initialized, instance ones when an object is created.
 
-`sortFields(true)` / `<sortFields>true</sortFields>` orders them like any other member. Only use it if no field initializer or initializer block depends on another one.
+Only reorder fields or initializers if none of them depends on another one. For example, `SF:BRD,SF:V,SI` moves `public static final int LIMIT = BASE * 2;` above `private static final int BASE = 10;`, which then fails to compile, and Eclipse's order `T,SF,SI,SM,F,I,C,M` moves every static initializer below all static fields.
 
 ## Differences from Eclipse Sort Members
 
 Compared with Eclipse's Sort Members, which Spotless also offers through `eclipse().sortMembersEnabled(true)`:
 
 - Members in the same group keep their source order. Eclipse sorts methods and types, and fields unless "do not sort fields" is on, by name.
+- A category can be split by visibility, and the parts placed anywhere in the order, such as private static methods after all instance methods. Eclipse orders visibilities within each category only, in the same order for every category.
 - Visibility follows the Java language. Eclipse counts as package-private both the interface methods without an explicit `public` (abstract, default, and static ones) and the enum constructors without a modifier.
 - An invalid setting fails the build instead of silently falling back to the default.
 - There are no `// @SortMembers:` comments to override the settings per file.

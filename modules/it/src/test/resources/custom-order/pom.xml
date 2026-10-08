@@ -27,9 +27,7 @@
         <configuration>
           <java implementation="io.github.yagipass.memberorder.maven.Java">
             <memberOrder>
-              <categoryOrder>SF,SI,F,I,C,SM,M,T</categoryOrder>
-              <visibilityOrder>B,R,D,V</visibilityOrder>
-              <sortFields>true</sortFields>
+              <order>T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V,M:V</order>
             </memberOrder>
           </java>
         </configuration>
