@@ -86,7 +86,7 @@ class MemberOrderStepTest {
   void stepStillEqualsAndFormatsAfterJavaSerializationBecauseGradleAndMavenCacheIt()
       throws Exception {
     FormatterStep step =
-        MemberOrderStep.builder().order("T,SF:BRD,SF:V,SI,SM,F,C,M:BRD,M:V").build();
+        MemberOrderStep.builder().order("T,SF:BRD,SF:V,SI,SM,F,C,@Bean,M:BRD,M:V").build();
 
     FormatterStep copy = deserialize(serialize(step));
 
@@ -114,6 +114,9 @@ class MemberOrderStepTest {
         MemberOrderStep.builder().order("T,SF,SM,F,C,M:BRD,M:V").build(),
         MemberOrderStep.builder().order("T,SF,SM,F,C,M:V,M:BRD").build());
     assertNotEquals(defaults, MemberOrderStep.builder().order("T,SF,SI,SM,F,I,C,M").build());
+    assertNotEquals(
+        MemberOrderStep.builder().order("T,SF,SM,F,C,@Bean,M").build(),
+        MemberOrderStep.builder().order("T,SF,SM,F,C,@Test,M").build());
   }
 
   @Test

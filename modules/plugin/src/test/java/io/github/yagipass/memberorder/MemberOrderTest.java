@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -145,6 +146,53 @@ class MemberOrderTest {
   }
 
   @Test
+  void
+      annotatedMembersTakeTheirAnnotationEntryWhateverTheirCategoryAndVisibilitySoStaticAndInstanceBeanMethodsStayTogether() {
+    MemberOrder order = MemberOrder.parse("T,SF,F,C,@Bean,SM,M");
+    List<String> bean = List.of("Bean");
+    int beans = order.rank(Category.METHOD, Visibility.PACKAGE, bean);
+
+    assertEquals(beans, order.rank(Category.STATIC_METHOD, Visibility.PUBLIC, bean));
+    assertEquals(beans, order.rank(Category.METHOD, Visibility.PRIVATE, bean));
+    assertEquals(beans, order.rank(Category.CONSTRUCTOR, Visibility.PUBLIC, bean));
+    assertEquals(beans, order.rank(Category.TYPE, Visibility.PROTECTED, bean));
+    assertTrue(order.rank(Category.CONSTRUCTOR, Visibility.PUBLIC) < beans);
+    assertTrue(beans < order.rank(Category.STATIC_METHOD, Visibility.PUBLIC));
+  }
+
+  @Test
+  void annotatedFieldsStayWithTheOtherFieldsBecauseMovingThemCanChangeInitializationOrder() {
+    MemberOrder order = MemberOrder.parse("@Inject,T,SF,SM,F,C,M");
+    List<String> inject = List.of("Inject");
+
+    assertEquals(
+        order.rank(Category.FIELD, Visibility.PRIVATE),
+        order.rank(Category.FIELD, Visibility.PRIVATE, inject));
+    assertEquals(
+        order.rank(Category.STATIC_FIELD, Visibility.PUBLIC),
+        order.rank(Category.STATIC_FIELD, Visibility.PUBLIC, inject));
+  }
+
+  @Test
+  void membersWithoutAListedAnnotationKeepTheirCategoryEntry() {
+    MemberOrder order = MemberOrder.parse("T,SF,SM,F,C,M,@Bean");
+
+    assertEquals(
+        order.rank(Category.METHOD, Visibility.PUBLIC),
+        order.rank(Category.METHOD, Visibility.PUBLIC, List.of("Override", "Deprecated")));
+  }
+
+  @Test
+  void
+      aMemberWithAnnotationsOfSeveralEntriesTakesTheEntryListedFirstNotTheAnnotationWrittenFirst() {
+    MemberOrder order = MemberOrder.parse("T,SF,SM,F,C,@Inject,M,@Deprecated");
+
+    assertEquals(
+        order.rank(Category.METHOD, Visibility.PUBLIC, List.of("Inject")),
+        order.rank(Category.METHOD, Visibility.PUBLIC, List.of("Deprecated", "Inject")));
+  }
+
+  @Test
   void whitespaceAroundEntriesIsAllowedSoMultiLineXmlValuesWork() {
     MemberOrder spaced = MemberOrder.parse("\n    T, SF ,SM,\tF,C,\n    M:BRD, M:V\n");
 
@@ -175,6 +223,13 @@ class MemberOrderTest {
             + " initializers",
         "T,SF,SM,F:B,F:RDV,C,M | F is split by visibility, so I must be listed to place the"
             + " initializers",
+        "T,SF,SM,F,C,M,@ | \"@\" does not name an annotation by its simple name",
+        "T,SF,SM,F,C,M,@org.example.Bean | \"@org.example.Bean\" does not name an annotation by its"
+            + " simple name",
+        "T,SF,SM,F,C,M,@Bean:B | \"@Bean:B\" does not name an annotation by its simple name",
+        "T,SF,SM,F,C,M,@interface | \"@interface\" does not name an annotation by its simple name",
+        "T,SF,SM,F,C,M,@Bean,@Bean | duplicate @Bean",
+        "@Bean | missing T,SF,SM,F,C,M",
       })
   void invalidOrderIsRejectedInsteadOfFallingBackToTheDefault(String order, String reason) {
     IllegalArgumentException error =
