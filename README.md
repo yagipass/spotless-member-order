@@ -5,9 +5,10 @@
 [![License](https://img.shields.io/github/license/yagipass/spotless-member-order)](LICENSE)
 ![Java 21+](https://img.shields.io/badge/Java-21%2B-blue)
 
-A [Spotless](https://github.com/diffplug/spotless) step for Gradle and Maven that orders the members of Java types by category and, optionally, visibility. Members in the same group keep their source order, and nothing is sorted by name. With the default settings, the step turns the first class below into the second.
+A [Spotless](https://github.com/diffplug/spotless) step for Gradle and Maven that orders the members of Java types by category and visibility. Members in the same group keep their source order.
 
 ```java
+// Before
 class Example {
     void zebra() {}
 
@@ -19,9 +20,8 @@ class Example {
 
     static final String NAME = "example";
 }
-```
 
-```java
+// After, with the default order
 class Example {
     static final String NAME = "example";
 
@@ -35,20 +35,13 @@ class Example {
 }
 ```
 
-Only members move, each with its Javadoc, annotations, the comments directly above it, and the comments at the end of its last line. Nothing else changes.
-
-## Requirements
-
-- Gradle or Maven running on Java 21 or later
-- Spotless Gradle plugin 7.0.0 or Spotless Maven plugin 2.44.0 or later
+Members move with their Javadoc, annotations, and comments. Nothing else changes.
 
 ## Usage
 
-Replace `<version>` and `${spotless-member-order.version}` with the [latest version](https://central.sonatype.com/artifact/io.github.yagipass/spotless-member-order), and `<spotless-version>` and `${spotless.version}` with your Spotless version.
+Requires Gradle or Maven on Java 21 or later, with Spotless Gradle plugin 7.0.0 or Spotless Maven plugin 2.44.0 or later.
 
 ### Gradle
-
-Add the step to `build.gradle.kts`.
 
 ```kotlin
 import io.github.yagipass.memberorder.MemberOrderStep
@@ -71,7 +64,7 @@ spotless {
 }
 ```
 
-In a multi-project build, put the `buildscript` block in the root project together with `id("com.diffplug.spotless") version "<spotless-version>" apply false`, so that the library is on the Spotless plugin's classloader.
+In a multi-project build, put `buildscript` in the root project, which also needs `id("com.diffplug.spotless") version "<spotless-version>" apply false`.
 
 ### Maven
 
@@ -95,7 +88,7 @@ In a multi-project build, put the `buildscript` block in the root project togeth
 </plugin>
 ```
 
-`implementation` replaces Spotless's `<java>` with a subclass that adds `<memberOrder>`. Everything else in `<java>` works as before. It cannot be combined with another library that replaces `<java>` the same way.
+`implementation` cannot be combined with another library that replaces `<java>`.
 
 ### With a formatter
 
@@ -119,7 +112,7 @@ spotless {
 
 ## Configuration
 
-`order` is a comma-separated list of entries. The default, `T,SF,SM,F,C,M`, follows Eclipse's default order and ignores visibility.
+`order` is a comma-separated list of entries. The default is `T,SF,SM,F,C,M`, Eclipse's default order.
 
 | Code | Category |
 |---|---|
@@ -163,36 +156,38 @@ spotless {
 
 ### Fields and initializers
 
-Field initializers and initializer blocks run in source order, so moving them can change behavior or break compilation. While `SF` is a single entry and `SI` is left out, as in the default, static fields and static initializers stay together in source order at the place of `SF`. The same goes for `F` and `I`.
+Unless `SI` is listed, static fields and static initializers stay together in source order at `SF`. The same goes for `F` and `I`. Listing them reorders them like other members, which breaks code where one depends on another.
 
-Listing `SI`, or splitting `SF` by visibility, orders them like other members, and likewise for `F` and `I`. Splitting `SF` requires listing `SI`, and splitting `F` requires listing `I`. Reorder them only if no field or initializer depends on another. For example, `SF:BRD,SF:V,SI` moves `public static final int LIMIT = BASE * 2;` above `private static final int BASE = 10;`, which then fails to compile.
+```java
+// T,SF:BRD,SF:V,SI,SM,F,C,M moves LIMIT above BASE, which then fails to compile.
+private static final int BASE = 10;
+public static final int LIMIT = BASE * 2;
+```
 
 ## Differences from Eclipse Sort Members
 
-Spotless also offers Eclipse's Sort Members through `eclipse().sortMembersEnabled(true)`.
+This step differs from Spotless's `eclipse().sortMembersEnabled(true)` in these ways.
 
-- Members in the same group keep their source order. Eclipse sorts methods and types by name.
-- A category can be split by visibility and the parts placed anywhere, such as private static methods after all instance methods.
-- Visibility follows the Java language. Eclipse treats interface methods without `public` and enum constructors without a modifier as package-private.
-- There are no `// @SortMembers:` comments to override the settings per file.
+- It keeps source order where Eclipse sorts methods and types by name.
+- It can split a category by visibility and place the parts anywhere.
+- It follows the Java language for visibility, where Eclipse treats interface methods without `public` and enum constructors without a modifier as package-private.
+- It has no `// @SortMembers:` comments to override the settings per file.
 
 ## Limitations
 
-The step leaves code unchanged rather than risk moving it wrongly. It leaves a whole file unchanged in these cases.
+The step leaves a whole file unchanged in these cases.
 
-- Eclipse JDT cannot parse the file at the newest Java version it supports, such as old code that uses `enum` or `assert` as an identifier, or a file that starts with a byte order mark.
+- Eclipse JDT cannot parse the file at the newest Java version it supports, for example because it uses `enum` as an identifier or starts with a byte order mark.
 - The sorted file would not parse.
-- The file contains `spotless:off` or `spotless:on`. Custom `toggleOffOn` markers or regexes are not detected, so a file that uses them can lose or swap code.
+- The file contains `spotless:off` or `spotless:on`. Custom `toggleOffOn` markers are not detected, so a file that uses them can lose or swap code.
 
-It leaves a type body unsorted, while still sorting the bodies nested in it, in these cases.
+It leaves a type body unsorted, but still sorts the bodies nested in it, in these cases.
 
-- A comment between members belongs to neither or could belong to either, such as a section heading with blank lines around it, or a comment directly below a member followed by a blank line.
-- Anything other than whitespace follows the last member, such as a comment, or separates members, such as a stray `;`.
-- A member shares its last line with the next member or the closing brace, as in `int x; int y;` or `int z; }`.
+- A comment between members could belong to neither or either, such as a heading with blank lines around it, or a comment directly below a member followed by a blank line.
+- Anything other than whitespace follows the last member or separates members.
+- A member shares its last line with the next member or the closing brace.
 
-The top-level fields and methods of a Java 25 compact source file are not sorted. Classes inside it are.
-
-The step does not order members by anything other than category and visibility, move enum constants, reorder top-level types, or keep `// region` blocks together.
+It does not sort the top-level members of Java 25 compact source files, move enum constants, reorder top-level types, or keep `// region` blocks together.
 
 ## Development
 
