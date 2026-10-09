@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
+import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
@@ -171,6 +172,17 @@ final class MemberSorter {
     return Visibility.PACKAGE;
   }
 
+  private static List<String> annotationsOf(BodyDeclaration declaration) {
+    List<String> names = new ArrayList<>();
+    for (Object modifier : declaration.modifiers()) {
+      if (modifier instanceof Annotation annotation) {
+        String name = annotation.getTypeName().getFullyQualifiedName();
+        names.add(name.substring(name.lastIndexOf('.') + 1));
+      }
+    }
+    return names;
+  }
+
   private static boolean isInterfaceOrAnnotation(ASTNode body) {
     return (body instanceof TypeDeclaration type && type.isInterface())
         || body instanceof AnnotationTypeDeclaration;
@@ -219,7 +231,8 @@ final class MemberSorter {
   private Member member(BodyDeclaration declaration) {
     CompilationUnit unit = (CompilationUnit) declaration.getRoot();
     int start = unit.getExtendedStartPosition(declaration);
-    int rank = order.rank(categoryOf(declaration), visibilityOf(declaration));
+    int rank =
+        order.rank(categoryOf(declaration), visibilityOf(declaration), annotationsOf(declaration));
     return new Member(declaration, start, start + unit.getExtendedLength(declaration), rank);
   }
 

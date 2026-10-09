@@ -6,12 +6,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.lang.model.SourceVersion;
 
 record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
 
@@ -26,8 +28,18 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
   static MemberOrder parse(String order) {
     List<Entry> entries = new ArrayList<>();
     Map<Category, Set<Visibility>> listed = new EnumMap<>(Category.class);
+    Set<String> annotations = new HashSet<>();
     for (String token : order.split(",", -1)) {
-      Entry entry = Entry.parse(order, token.strip());
+      String text = token.strip();
+      if (text.startsWith("@")) {
+        AnnotationEntry entry = AnnotationEntry.parse(order, text);
+        if (!annotations.add(entry.name())) {
+          throw invalid(order, "duplicate " + text);
+        }
+        entries.add(entry);
+        continue;
+      }
+      CategoryEntry entry = CategoryEntry.parse(order, text);
       Set<Visibility> seen =
           listed.computeIfAbsent(entry.category(), category -> EnumSet.noneOf(Visibility.class));
       Set<Visibility> repeated = EnumSet.noneOf(Visibility.class);
@@ -55,7 +67,14 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
     }
     FIELDS_OF_INITIALIZERS.forEach(
         (initializers, fields) -> {
-          boolean split = entries.stream().filter(entry -> entry.category() == fields).count() > 1;
+          boolean split =
+              entries.stream()
+                      .filter(
+                          entry ->
+                              entry instanceof CategoryEntry categoryEntry
+                                  && categoryEntry.category() == fields)
+                      .count()
+                  > 1;
           if (split && !listed.containsKey(initializers)) {
             throw invalid(
                 order,
@@ -69,22 +88,40 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
   }
 
   int rank(Category category, Visibility visibility) {
+    return rank(category, visibility, Set.of());
+  }
+
+  int rank(Category category, Visibility visibility, Collection<String> annotations) {
+    if (!FIELDS_OF_INITIALIZERS.containsValue(category)) {
+      for (int i = 0; i < entries.size(); i++) {
+        if (entries.get(i) instanceof AnnotationEntry entry && annotations.contains(entry.name())) {
+          return i;
+        }
+      }
+    }
     Category placed =
-        entries.stream().anyMatch(entry -> entry.category() == category)
+        entries.stream()
+                .anyMatch(
+                    entry ->
+                        entry instanceof CategoryEntry categoryEntry
+                            && categoryEntry.category() == category)
             ? category
             : FIELDS_OF_INITIALIZERS.getOrDefault(category, category);
     for (int i = 0; i < entries.size(); i++) {
-      Entry entry = entries.get(i);
-      if (entry.category() == placed && entry.visibilities().contains(visibility)) {
+      if (entries.get(i) instanceof CategoryEntry entry
+          && entry.category() == placed
+          && entry.visibilities().contains(visibility)) {
         return i;
       }
     }
     throw new IllegalStateException("No entry for " + describe(category, Set.of(visibility)));
   }
 
-  record Entry(Category category, List<Visibility> visibilities) implements Serializable {
+  sealed interface Entry extends Serializable {}
 
-    private static Entry parse(String order, String text) {
+  record CategoryEntry(Category category, List<Visibility> visibilities) implements Entry {
+
+    private static CategoryEntry parse(String order, String text) {
       int colon = text.indexOf(':');
       String categoryCode = colon < 0 ? text : text.substring(0, colon);
       Category category =
@@ -98,7 +135,7 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
                               + "\"; use "
                               + codes(Category.values(), Category::code)));
       if (colon < 0) {
-        return new Entry(category, List.of(Visibility.values()));
+        return new CategoryEntry(category, List.of(Visibility.values()));
       }
       if (FIELDS_OF_INITIALIZERS.containsKey(category)) {
         throw invalid(
@@ -133,7 +170,18 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
         }
         visibilities.add(visibility);
       }
-      return new Entry(category, List.copyOf(visibilities));
+      return new CategoryEntry(category, List.copyOf(visibilities));
+    }
+  }
+
+  record AnnotationEntry(String name) implements Entry {
+
+    private static AnnotationEntry parse(String order, String text) {
+      String name = text.substring(1);
+      if (!SourceVersion.isIdentifier(name) || SourceVersion.isKeyword(name)) {
+        throw invalid(order, "\"" + text + "\" does not name an annotation by its simple name");
+      }
+      return new AnnotationEntry(name);
     }
   }
 

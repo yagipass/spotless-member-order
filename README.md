@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/yagipass/spotless-member-order)](LICENSE)
 ![Java 21+](https://img.shields.io/badge/Java-21%2B-blue)
 
-A [Spotless](https://github.com/diffplug/spotless) step for Gradle and Maven that orders the members of Java types by category and visibility. Members in the same group keep their source order.
+A [Spotless](https://github.com/diffplug/spotless) step for Gradle and Maven that orders the members of Java types by category, visibility, and annotations. Members in the same group keep their source order.
 
 ```java
 // Before
@@ -152,6 +152,31 @@ spotless {
 <memberOrder>
   <order>T:BRD,T:V,SF,F,C:BRD,C:V,SM:BRD,M:BRD,SM:V,M:V</order>
 </memberOrder>
+```
+
+### Annotations
+
+An entry can also be `@` and the simple name of an annotation. It takes the methods, constructors, and member types with that annotation, whatever their category and visibility. Fields stay in their category's entry. A member with the annotations of several entries goes to the one listed first.
+
+This order puts `@Bean` methods, static or not, after the constructors.
+
+```java
+// T,SF,F,C,@Bean,SM,M
+class AppConfig {
+    private final AppProperties props;
+
+    AppConfig(AppProperties props) { ... }
+
+    @Bean
+    DataSource dataSource() { ... }
+
+    @Bean
+    static PropertySourcesPlaceholderConfigurer placeholders() { ... }
+
+    static String url(String host) { ... }
+
+    private HikariConfig hikariConfig() { ... }
+}
 ```
 
 ### Fields and initializers
