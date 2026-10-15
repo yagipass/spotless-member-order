@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,7 +78,20 @@ final class MemberSorter {
   private static List<Member> sorted(List<Member> members) {
     List<Member> sorted = new ArrayList<>(members);
     sorted.sort(Comparator.comparingInt(Member::rank));
-    return sorted;
+    Map<Object, List<Member>> overloads = new LinkedHashMap<>();
+    for (Member member : sorted) {
+      overloads
+          .computeIfAbsent(overloadKey(member.declaration()), key -> new ArrayList<>())
+          .add(member);
+    }
+    return overloads.values().stream().flatMap(List::stream).toList();
+  }
+
+  private static Object overloadKey(BodyDeclaration declaration) {
+    if (declaration instanceof MethodDeclaration method) {
+      return method.isConstructor() ? "<init>" : method.getName().getIdentifier();
+    }
+    return declaration;
   }
 
   private static boolean isSortable(String source, List<Member> members) {
