@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/yagipass/spotless-member-order)](LICENSE)
 ![Java 21+](https://img.shields.io/badge/Java-21%2B-blue)
 
-A [Spotless](https://github.com/diffplug/spotless) step for Gradle and Maven that orders the members of Java types by category, visibility, and annotations. Members in the same group keep their source order.
+A [Spotless](https://github.com/diffplug/spotless) step for Gradle and Maven that orders the members of Java types by category, visibility, and annotations. Members in the same group keep their source order, and overloads stay together.
 
 ```java
 // Before
@@ -132,7 +132,7 @@ spotless {
 | `D` | package-private |
 | `V` | private |
 
-An entry is a category, such as `M` for all methods, or a category with visibilities in `BRDV` order, such as `M:BRD` for the methods that are not private. Every category and visibility pair must be in exactly one entry, but `SI` and `I` can be left out. Members in the same entry keep their source order. An invalid `order` fails the build.
+An entry is a category, such as `M` for all methods, or a category with visibilities in `BRDV` order, such as `M:BRD` for the methods that are not private. Every category and visibility pair must be in exactly one entry, but `SI` and `I` can be left out. Apart from [overloads](#overloads), members in the same entry keep their source order. An invalid `order` fails the build.
 
 This order puts private types and constructors after the others, and private methods, static or not, after all other methods.
 
@@ -179,6 +179,23 @@ class AppConfig {
 }
 ```
 
+### Overloads
+
+Methods with the same name stay next to each other, static or not and whatever their visibility, and so do constructors, as Google Java Style and Error Prone's `UngroupedOverloads` require. They go where the first of them in the order goes, even if that is outside their own entry, and among themselves follow the order.
+
+```java
+// T,SF,F,C,SM,M:BRD,M:V
+class Parser {
+    public int parse(String text) { ... }
+
+    private int parse(String text, int radix) { ... }
+
+    public boolean accepts(String text) { ... }
+
+    private String normalize(String text) { ... }
+}
+```
+
 ### Fields and initializers
 
 Unless `SI` is listed, static fields and static initializers stay together in source order at `SF`. The same goes for `F` and `I`. Listing them reorders them like other members, which breaks code where one depends on another.
@@ -195,6 +212,7 @@ This step differs from Spotless's `eclipse().sortMembersEnabled(true)` in these 
 
 - It keeps source order where Eclipse sorts methods and types by name.
 - It can split a category by visibility and place the parts anywhere.
+- It keeps overloads together, where Eclipse separates static and instance methods with the same name, and also public and private ones when it sorts by visibility.
 - It follows the Java language for visibility, where Eclipse treats interface methods without `public` and enum constructors without a modifier as package-private.
 - It has no `// @SortMembers:` comments to override the settings per file.
 
