@@ -52,6 +52,8 @@
             gitleaks = {
               enable = true;
               name = "gitleaks";
+              args = [ ];
+              pass_filenames = true;
               entry = "${pkgs.writeShellScript "gitleaks-files" ''
                 status=0
                 for file in "$@"; do
