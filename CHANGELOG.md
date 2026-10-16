@@ -1,5 +1,17 @@
 # Changelog
 
+## [v0.3.0](https://github.com/yagipass/spotless-member-order/compare/v0.2.0...v0.3.0) - 2026-10-16
+
+- build(deps): bump nixpkgs from `73e728d` to `8edc0c7` by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/16
+- build(deps): bump com.diffplug.spotless:spotless-maven-plugin from 3.10.3 to 3.10.4 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/17
+- build(deps): bump Songmu/tagpr from 1.21.1 to 1.21.2 in the actions group by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/18
+- build(deps): bump com.diffplug.spotless:spotless-lib from 4.10.3 to 4.10.4 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/20
+- build(deps): bump gradle-wrapper from 9.8.0 to 9.8.1 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/21
+- build(deps): bump com.diffplug.spotless from 8.10.3 to 8.10.4 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/19
+- feat!: keep overloaded methods and constructors together by @yagipass in https://github.com/yagipass/spotless-member-order/pull/24
+- build: keep the gitleaks hook scanning files with newer git-hooks.nix by @yagipass in https://github.com/yagipass/spotless-member-order/pull/26
+- build: lock GitHub Actions dependencies with a workflow lockfile by @yagipass in https://github.com/yagipass/spotless-member-order/pull/28
+
 ## [v0.2.0](https://github.com/yagipass/spotless-member-order/compare/v0.1.0...v0.2.0) - 2026-10-10
 
 - docs: drop the buildscript repositories block from the Gradle example by @yagipass in https://github.com/yagipass/spotless-member-order/pull/8
