@@ -16,6 +16,7 @@ concurrency:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -33,6 +34,7 @@ jobs:
       matrix:
         java: ["21", "25"]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -50,6 +52,7 @@ jobs:
     if: github.event_name == 'push'
     needs: [checks, gradle]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
       pull-requests: write
@@ -69,6 +72,7 @@ jobs:
     if: needs.tagpr.outputs.tag != ''
     needs: tagpr
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
