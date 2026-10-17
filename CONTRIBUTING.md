@@ -59,4 +59,4 @@ A pull request:
 
 Merge the release pull request that [tagpr](https://github.com/Songmu/tagpr) keeps open, after approving its checks. Label it `tagpr:minor` or `tagpr:major` for more than a patch release. `build.yml` then tags `vX.Y.Z`, uploads the signed artifacts to Maven Central, attaches the jar to the GitHub release, and publishes the release. Then publish the deployment by hand in the [Central Portal](https://central.sonatype.com/publishing/deployments).
 
-This needs Actions to be allowed to create pull requests, and four secrets: `MAVEN_CENTRAL_TOKEN_USERNAME` and `MAVEN_CENTRAL_TOKEN_PASSWORD` (a Central Portal user token), and `MAVEN_GPG_PRIVATE_KEY` and `MAVEN_GPG_PASSPHRASE` (the ASCII-armored signing key and its passphrase).
+This needs Actions to be allowed to create pull requests, and an environment `maven-central` that only `main` can deploy to, with four secrets: `MAVEN_CENTRAL_TOKEN_USERNAME` and `MAVEN_CENTRAL_TOKEN_PASSWORD` (a Central Portal user token), and `MAVEN_GPG_PRIVATE_KEY` and `MAVEN_GPG_PASSPHRASE` (the ASCII-armored signing key and its passphrase).
