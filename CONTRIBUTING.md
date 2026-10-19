@@ -44,6 +44,7 @@ The first run downloads Spotless, google-java-format and their dependencies, so 
 - `./gradlew build` fails on unformatted Java and on any javac (`-Xlint:all -Werror`) or Error Prone warning, NullAway included. Every package, test packages too, needs a `package-info.java` with `@NullMarked`.
 - Test fixtures in `modules/plugin/src/test/resources` and `modules/it/src/test/resources` are neither formatted nor touched by the whitespace hooks, and git checks them out with LF line endings. A fixture that needs CRLF line endings goes in `modules/plugin/src/test/resources/fixtures/crlf/<case>/`; git keeps those files byte for byte.
 - Commit messages follow Conventional Commits, checked by the `commit-msg` hook.
+- Name branches `<type>/<slug>` after the Conventional Commits type. `.github/labeler.yml` labels the pull request by it, `feat/` as `enhancement`, `fix/` as `bug`, and `docs/` as `documentation`, and `.github/release.yml` groups the changelog by these labels and Dependabot's `dependencies`.
 
 ## Proposing a change
 
@@ -57,7 +58,9 @@ A pull request:
 
 ## Release
 
-Merge the release pull request that [tagpr](https://github.com/Songmu/tagpr) keeps open, after approving its checks. Label it `tagpr:minor` or `tagpr:major` for more than a patch release. `release.yml` then tags `vX.Y.Z`, builds and tests it again, uploads the signed artifacts to Maven Central, attaches the jar to the GitHub release, and publishes the release. Then publish the deployment by hand in the [Central Portal](https://central.sonatype.com/publishing/deployments).
+Before merging a pull request, label it by hand if it comes from a fork, which the labeler skips, and add `breaking-change` if it breaks existing users.
+
+Merge the release pull request that [tagpr](https://github.com/Songmu/tagpr) keeps open, after approving its checks. It is a minor release if a merged pull request is labeled `enhancement` or `breaking-change`, and a patch release otherwise. Label it `tagpr:major` for a major release. `release.yml` then tags `vX.Y.Z`, builds and tests it again, uploads the signed artifacts to Maven Central, attaches the jar to the GitHub release, and publishes the release. Then publish the deployment by hand in the [Central Portal](https://central.sonatype.com/publishing/deployments).
 
 This needs Actions to be allowed to create pull requests, and an environment `maven-central` that only `main` can deploy to, with four secrets: `MAVEN_CENTRAL_TOKEN_USERNAME` and `MAVEN_CENTRAL_TOKEN_PASSWORD` (a Central Portal user token), and `MAVEN_GPG_PRIVATE_KEY` and `MAVEN_GPG_PASSPHRASE` (the ASCII-armored signing key and its passphrase).
 

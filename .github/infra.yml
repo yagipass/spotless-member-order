@@ -21,6 +21,9 @@ spec:
   - name: accessibility
     description: Barrier affecting people with disabilities
     color: f143ab
+  - name: breaking-change
+    description: Changes that break existing users
+    color: b60205
   - name: bug
     description: Something isn't working
     color: d73a4a
@@ -58,6 +61,8 @@ spec:
     description: Further information is requested
     color: d876e3
   - name: tagpr
+    color: ededed
+  - name: tagpr:major
     color: ededed
   - name: tagpr:minor
     color: CB9B70
