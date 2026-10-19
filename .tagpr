@@ -2,5 +2,6 @@
 	vPrefix = true
 	releaseBranch = main
 	versionFile = gradle.properties
+	minorLabels = enhancement,breaking-change
 	changelog = true
 	release = draft
