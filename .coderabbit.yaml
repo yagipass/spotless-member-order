@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+reviews:
+  path_filters:
+    - "!flake.lock"
+    - "!.github/workflows/actions.lock"
+    - "!gradlew"
+    - "!gradlew.bat"
+    - "!gradle/wrapper/**"
+  auto_review:
+    ignore_usernames:
+      - "dependabot[bot]"
+      - "github-actions[bot]"
+  tools:
+    markdownlint:
+      enabled: false
+    pmd:
+      enabled: false
+knowledge_base:
+  code_guidelines:
+    filePatterns:
+      - CONTRIBUTING.md
