@@ -1,5 +1,18 @@
 # Changelog
 
+## [v0.3.1](https://github.com/yagipass/spotless-member-order/compare/v0.3.0...v0.3.1) - 2026-10-24
+
+### Dependencies
+- build(deps): bump the actions group with 2 updates by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/42
+### Other Changes
+- build: stop overlapping and hung workflow runs by @yagipass in https://github.com/yagipass/spotless-member-order/pull/31
+- build: publish without the Gradle cache and delay Dependabot updates by @yagipass in https://github.com/yagipass/spotless-member-order/pull/32
+- build: keep the Maven Central secrets in a main-only environment by @yagipass in https://github.com/yagipass/spotless-member-order/pull/34
+- build: queue release runs on main so that none of them is skipped by @yagipass in https://github.com/yagipass/spotless-member-order/pull/36
+- build: manage the repository settings with gh-infra by @yagipass in https://github.com/yagipass/spotless-member-order/pull/38
+- build: group the changelog by kind of change and bump minor for features by @yagipass in https://github.com/yagipass/spotless-member-order/pull/41
+- build: configure CodeRabbit reviews for this repository by @yagipass in https://github.com/yagipass/spotless-member-order/pull/44
+
 ## [v0.3.0](https://github.com/yagipass/spotless-member-order/compare/v0.2.0...v0.3.0) - 2026-10-16
 
 - build(deps): bump nixpkgs from `73e728d` to `8edc0c7` by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/16
