@@ -107,7 +107,7 @@
 
             JAVA_HOME = jdk.home;
 
-            shellHook = config.pre-commit.installationScript;
+            shellHook = config.pre-commit.shellHook;
           };
         };
     };
