@@ -99,7 +99,15 @@
               };
             };
 
-            actionlint.enable = true;
+            jactionlint = {
+              enable = true;
+              name = "jactionlint";
+              package = pkgs.jactionlint;
+              entry = "${pkgs.jactionlint}/bin/jactionlint";
+              args = [ "--shellcheck=${pkgs.shellcheck}/bin/shellcheck" ];
+              files = "^(\\.github/workflows/|\\.github/dependabot\\.ya?ml$|(.*/)?action\\.ya?ml$)";
+              types = [ "yaml" ];
+            };
           };
 
           devShells.default = pkgs.mkShell {
