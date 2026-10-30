@@ -32,7 +32,12 @@
       ];
 
       perSystem =
-        { config, pkgs, ... }:
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }:
         let
           jdk = pkgs.jdk25;
           fixtures = "^modules/(plugin|it)/src/test/resources/";
@@ -89,12 +94,10 @@
 
             jactionlint = {
               enable = true;
-              name = "jactionlint";
               package = pkgs.jactionlint;
-              entry = "${pkgs.jactionlint}/bin/jactionlint";
-              args = [ "--shellcheck=${pkgs.shellcheck}/bin/shellcheck" ];
-              files = "^(\\.github/workflows/|\\.github/dependabot\\.ya?ml$|(.*/)?action\\.ya?ml$)";
-              types = [ "yaml" ];
+              entry = "${lib.getExe pkgs.jactionlint} --shellcheck=${lib.getExe pkgs.shellcheck} --pyflakes=${lib.getExe pkgs.python3Packages.pyflakes}";
+              files = "^\\.github/|(^|/)action\\.ya?ml$";
+              pass_filenames = false;
             };
           };
 
