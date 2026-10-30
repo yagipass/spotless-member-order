@@ -65,7 +65,7 @@ Merge the release pull request that [tagpr](https://github.com/Songmu/tagpr) kee
 
 tagpr writes `CHANGELOG.md` and the version in `gradle.properties`, so do not edit them by hand.
 
-This needs Actions to be allowed to create pull requests, and an environment `maven-central` that only `main` can deploy to, with four secrets: `MAVEN_CENTRAL_TOKEN_USERNAME` and `MAVEN_CENTRAL_TOKEN_PASSWORD` (a Central Portal user token), and `MAVEN_GPG_PRIVATE_KEY` and `MAVEN_GPG_PASSPHRASE` (the ASCII-armored signing key and its passphrase).
+This needs the "Allow GitHub Actions to create and approve pull requests" setting, which `.github/infra.yml` turns on, and an environment `maven-central` that only `main` can deploy to, with four secrets: `MAVEN_CENTRAL_TOKEN_USERNAME` and `MAVEN_CENTRAL_TOKEN_PASSWORD` (a Central Portal user token), and `MAVEN_GPG_PRIVATE_KEY` and `MAVEN_GPG_PASSPHRASE` (the ASCII-armored signing key and its passphrase).
 
 ## Repository settings
 
