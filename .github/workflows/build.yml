@@ -27,7 +27,10 @@ jobs:
         with:
           primary-key: nix-checks-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
       - run: nix flake check -L
-      - run: nix run --inputs-from . nixpkgs#gitleaks -- git --redact --verbose
+      - run: |
+          opts=(--full-history --all --diff-filter=tuxdb --diff-merges=first-parent)
+          git log "${opts[@]}" -1 > /dev/null
+          nix run --inputs-from . nixpkgs#gitleaks -- git --log-opts="${opts[*]}" --redact --verbose
 
   gradle:
     name: gradle (JDK ${{ matrix.java }})
