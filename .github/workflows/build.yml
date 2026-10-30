@@ -22,10 +22,10 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: cachix/install-nix-action@v31.11.2
+      - uses: cachix/install-nix-action@v31.11.3
       - uses: nix-community/cache-nix-action@v7.0.2
         with:
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
+          primary-key: nix-checks-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
       - run: nix flake check -L
       - run: nix run --inputs-from . nixpkgs#gitleaks -- git --redact --verbose
 
