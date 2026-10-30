@@ -11,7 +11,16 @@ base {
 }
 
 dependencies {
-    implementation(libs.eclipse.jdt.core)
+    implementation(libs.eclipse.jdt.core) {
+        exclude(group = "net.java.dev.jna", module = "jna")
+        exclude(group = "net.java.dev.jna", module = "jna-platform")
+        exclude(group = "org.eclipse.platform", module = "org.eclipse.core.commands")
+        exclude(group = "org.eclipse.platform", module = "org.eclipse.core.expressions")
+        exclude(group = "org.eclipse.platform", module = "org.eclipse.core.filesystem")
+        exclude(group = "org.eclipse.platform", module = "org.eclipse.equinox.app")
+        exclude(group = "org.eclipse.platform", module = "org.eclipse.equinox.registry")
+        exclude(group = "org.osgi", module = "osgi.annotation")
+    }
     compileOnly(libs.spotless.lib)
     compileOnly(libs.spotless.maven.plugin)
 
