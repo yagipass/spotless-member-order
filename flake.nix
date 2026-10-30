@@ -58,11 +58,17 @@
 
             end-of-file-fixer = {
               enable = true;
-              excludes = [ fixtures ];
+              excludes = [
+                "^CHANGELOG\\.md$"
+                fixtures
+              ];
             };
             trim-trailing-whitespace = {
               enable = true;
-              excludes = [ fixtures ];
+              excludes = [
+                "^CHANGELOG\\.md$"
+                fixtures
+              ];
             };
             check-merge-conflicts = {
               enable = true;
@@ -77,6 +83,7 @@
             typos = {
               enable = true;
               files = "\\.md$";
+              excludes = [ "^CHANGELOG\\.md$" ];
             };
             markdownlint = {
               enable = true;
