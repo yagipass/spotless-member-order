@@ -55,7 +55,7 @@ A pull request:
 - references its issue (`Closes #N`), if it has one.
 - adds tests when it changes behavior. A bug fix adds a test that reproduces the bug.
 - passes `./gradlew build`.
-- has a Conventional Commits title. Pull requests are squash-merged, so the title becomes the commit on `main`.
+- has a Conventional Commits title. Pull requests are squash-merged, so the title becomes the commit on `main`. It is also the pull request's entry in `CHANGELOG.md`.
 
 ## Release
 
