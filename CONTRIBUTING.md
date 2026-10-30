@@ -21,6 +21,7 @@ The library is in `modules/plugin`, the integration tests in `modules/it`, and t
 | `./gradlew publishToMavenLocal` | install the library into the local Maven repository to try it in another project; it is signed only when `signingInMemoryKey` is set |
 | `nix fmt` | format Nix |
 | `nix flake check` | run the git hooks over every tracked file, as CI does |
+| `nix run --inputs-from . nixpkgs#gitleaks -- git --log-opts="--full-history --all --diff-filter=uxdb --diff-merges=first-parent" --redact --verbose` | scan the whole git history for secrets, as CI does |
 
 CI runs `./gradlew build` on JDK 21 and JDK 25. To do the same locally, run it again with `JAVA_HOME` set to a JDK 21.
 
