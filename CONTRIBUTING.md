@@ -52,9 +52,10 @@ Open an issue before you start on a new feature or a change to how members are o
 
 A pull request:
 
-- references its issue (`Closes #N`).
-- adds tests. A bug fix adds a test that reproduces the bug.
+- references its issue (`Closes #N`), if it has one.
+- adds tests when it changes behavior. A bug fix adds a test that reproduces the bug.
 - passes `./gradlew build`.
+- has a Conventional Commits title. Pull requests are squash-merged, so the title becomes the commit on `main`. It is also the pull request's entry in `CHANGELOG.md`.
 
 ## Release
 
@@ -62,10 +63,12 @@ Before merging a pull request, label it by hand if it comes from a fork, which t
 
 Merge the release pull request that [tagpr](https://github.com/Songmu/tagpr) keeps open, after approving its checks. It is a minor release if a merged pull request is labeled `enhancement` or `breaking-change`, and a patch release otherwise. Label it `tagpr:major` for a major release. `release.yml` then tags `vX.Y.Z`, builds and tests it again, uploads the signed artifacts to Maven Central, attaches the jar to the GitHub release, and publishes the release. Then publish the deployment by hand in the [Central Portal](https://central.sonatype.com/publishing/deployments).
 
-This needs Actions to be allowed to create pull requests, and an environment `maven-central` that only `main` can deploy to, with four secrets: `MAVEN_CENTRAL_TOKEN_USERNAME` and `MAVEN_CENTRAL_TOKEN_PASSWORD` (a Central Portal user token), and `MAVEN_GPG_PRIVATE_KEY` and `MAVEN_GPG_PASSPHRASE` (the ASCII-armored signing key and its passphrase).
+tagpr writes `CHANGELOG.md` and the version in `gradle.properties`, so do not edit them by hand.
+
+This needs the "Allow GitHub Actions to create and approve pull requests" setting, which `.github/infra.yml` turns on, and an environment `maven-central` that only `main` can deploy to, with four secrets: `MAVEN_CENTRAL_TOKEN_USERNAME` and `MAVEN_CENTRAL_TOKEN_PASSWORD` (a Central Portal user token), and `MAVEN_GPG_PRIVATE_KEY` and `MAVEN_GPG_PASSPHRASE` (the ASCII-armored signing key and its passphrase).
 
 ## Repository settings
 
 The repository settings, labels, rulesets, and Actions permissions are managed with [gh-infra](https://github.com/babarot/gh-infra) in `.github/infra.yml`. To change them, edit the file, review the difference with `gh infra plan .github/infra.yml`, and apply it with `gh infra apply .github/infra.yml`. Applying needs admin access to the repository.
 
-The `maven-central` environment and its secrets are not managed by gh-infra. Change them in the repository settings on GitHub.
+Environments and secrets are not managed by gh-infra. Change them in the repository settings on GitHub.

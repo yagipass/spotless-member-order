@@ -238,4 +238,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-[Apache License 2.0](LICENSE)
+spotless-member-order is licensed under the [Apache License, Version 2.0](LICENSE).
