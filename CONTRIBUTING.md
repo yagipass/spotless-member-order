@@ -70,6 +70,6 @@ This needs the "Allow GitHub Actions to create and approve pull requests" settin
 
 ## Repository settings
 
-The repository settings, labels, rulesets, and Actions permissions are managed with [gh-infra](https://github.com/babarot/gh-infra) in `.github/infra.yml`. To change them, edit the file, review the difference with `gh infra plan .github/infra.yml`, and apply it with `gh infra apply .github/infra.yml`. Applying needs admin access to the repository.
+The repository settings, labels, rulesets, environments, and Actions permissions are managed with [gh-infra](https://github.com/babarot/gh-infra) in `.github/infra.yml`. To change them, edit the file, review the difference with `gh infra plan .github/infra.yml`, and apply it with `gh infra apply .github/infra.yml`. Applying needs admin access to the repository.
 
-Environments and secrets are not managed by gh-infra. Change them in the repository settings on GitHub.
+Secrets are not managed by gh-infra, because every `gh infra apply` would then need their values in the shell. Change them in the repository settings on GitHub.

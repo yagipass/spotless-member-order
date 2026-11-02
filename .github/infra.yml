@@ -3,6 +3,8 @@ kind: Repository
 metadata:
   name: spotless-member-order
   owner: yagipass
+reconcile:
+  deployment_branch_policies: authoritative
 spec:
   description: A Spotless step for Gradle and Maven that orders the members of Java types by category and visibility while keeping their original order within each group.
   visibility: public
@@ -144,3 +146,11 @@ spec:
     workflow_permissions: read
     can_approve_pull_requests: true
     fork_pr_approval: first_time_contributors
+  environments:
+  - name: maven-central
+    wait_timer: 0
+    can_admins_bypass: true
+    reviewers: []
+    deployment_branch_policy:
+      custom_branch_policies:
+      - name: main
