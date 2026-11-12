@@ -65,25 +65,23 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
     if (!missing.isEmpty()) {
       throw invalid(order, "missing " + String.join(",", missing));
     }
-    FIELDS_OF_INITIALIZERS.forEach(
-        (initializers, fields) -> {
-          boolean split =
-              entries.stream()
-                      .filter(
-                          entry ->
-                              entry instanceof CategoryEntry categoryEntry
-                                  && categoryEntry.category() == fields)
-                      .count()
-                  > 1;
-          if (split && !listed.containsKey(initializers)) {
-            throw invalid(
-                order,
-                fields.code()
-                    + " is split by visibility, so "
-                    + initializers.code()
-                    + " must be listed to place the initializers");
-          }
-        });
+    FIELDS_OF_INITIALIZERS.forEach((initializers, fields) -> {
+      boolean split =
+          entries.stream()
+                  .filter(entry ->
+                      entry instanceof CategoryEntry categoryEntry
+                          && categoryEntry.category() == fields)
+                  .count()
+              > 1;
+      if (split && !listed.containsKey(initializers)) {
+        throw invalid(
+            order,
+            fields.code()
+                + " is split by visibility, so "
+                + initializers.code()
+                + " must be listed to place the initializers");
+      }
+    });
     return new MemberOrder(List.copyOf(entries));
   }
 
@@ -101,10 +99,9 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
     }
     Category placed =
         entries.stream()
-                .anyMatch(
-                    entry ->
-                        entry instanceof CategoryEntry categoryEntry
-                            && categoryEntry.category() == category)
+                .anyMatch(entry ->
+                    entry instanceof CategoryEntry categoryEntry
+                        && categoryEntry.category() == category)
             ? category
             : FIELDS_OF_INITIALIZERS.getOrDefault(category, category);
     for (int i = 0; i < entries.size(); i++) {
@@ -126,14 +123,13 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
       String categoryCode = colon < 0 ? text : text.substring(0, colon);
       Category category =
           find(Category.values(), Category::code, categoryCode)
-              .orElseThrow(
-                  () ->
-                      invalid(
-                          order,
-                          "unknown category \""
-                              + categoryCode
-                              + "\"; use "
-                              + codes(Category.values(), Category::code)));
+              .orElseThrow(() ->
+                  invalid(
+                      order,
+                      "unknown category \""
+                          + categoryCode
+                          + "\"; use "
+                          + codes(Category.values(), Category::code)));
       if (colon < 0) {
         return new CategoryEntry(category, List.of(Visibility.values()));
       }
@@ -149,16 +145,15 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
       for (String letter : letters.codePoints().mapToObj(Character::toString).toList()) {
         Visibility visibility =
             find(Visibility.values(), Visibility::code, letter)
-                .orElseThrow(
-                    () ->
-                        invalid(
-                            order,
-                            "unknown visibility \""
-                                + letter
-                                + "\" in \""
-                                + text
-                                + "\"; use "
-                                + codes(Visibility.values(), Visibility::code)));
+                .orElseThrow(() ->
+                    invalid(
+                        order,
+                        "unknown visibility \""
+                            + letter
+                            + "\" in \""
+                            + text
+                            + "\"; use "
+                            + codes(Visibility.values(), Visibility::code)));
         if (!visibilities.isEmpty() && visibility.compareTo(visibilities.getLast()) <= 0) {
           throw invalid(
               order,

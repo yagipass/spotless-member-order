@@ -21,16 +21,16 @@ class MemberOrderStepTest {
 
   private static final String UNSORTED =
       """
-            class Example {
-                private void helper() {
-                }
+      class Example {
+          private void helper() {
+          }
 
-                public void run() {
-                }
+          public void run() {
+          }
 
-                private int count;
-            }
-            """;
+          private int count;
+      }
+      """;
 
   @Test
   void
@@ -42,16 +42,16 @@ class MemberOrderStepTest {
   void createdStepSortsByCategoryAndKeepsSourceOrderWithinACategory() throws Exception {
     String expected =
         """
-                class Example {
-                    private int count;
+        class Example {
+            private int count;
 
-                    private void helper() {
-                    }
+            private void helper() {
+            }
 
-                    public void run() {
-                    }
-                }
-                """;
+            public void run() {
+            }
+        }
+        """;
 
     assertEquals(expected, MemberOrderStep.create().format(UNSORTED, FILE));
   }
@@ -61,16 +61,16 @@ class MemberOrderStepTest {
     FormatterStep step = MemberOrderStep.builder().order("M:BRD,M:V,C,SM,SF,F,T").build();
     String expected =
         """
-                class Example {
-                    public void run() {
-                    }
+        class Example {
+            public void run() {
+            }
 
-                    private void helper() {
-                    }
+            private void helper() {
+            }
 
-                    private int count;
-                }
-                """;
+            private int count;
+        }
+        """;
 
     assertEquals(expected, step.format(UNSORTED, FILE));
   }
