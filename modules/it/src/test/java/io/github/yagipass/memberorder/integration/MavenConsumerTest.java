@@ -37,23 +37,23 @@ class MavenConsumerTest {
     Files.writeString(
         SETTINGS_FILE,
         """
-                <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
-                  <profiles>
-                    <profile>
-                      <id>spotless-member-order</id>
-                      <pluginRepositories>
-                        <pluginRepository>
-                          <id>spotless-member-order</id>
-                          <url>%s</url>
-                        </pluginRepository>
-                      </pluginRepositories>
-                    </profile>
-                  </profiles>
-                  <activeProfiles>
-                    <activeProfile>spotless-member-order</activeProfile>
-                  </activeProfiles>
-                </settings>
-                """
+        <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
+          <profiles>
+            <profile>
+              <id>spotless-member-order</id>
+              <pluginRepositories>
+                <pluginRepository>
+                  <id>spotless-member-order</id>
+                  <url>%s</url>
+                </pluginRepository>
+              </pluginRepositories>
+            </profile>
+          </profiles>
+          <activeProfiles>
+            <activeProfile>spotless-member-order</activeProfile>
+          </activeProfiles>
+        </settings>
+        """
             .formatted(Environment.repository().toUri()));
   }
 

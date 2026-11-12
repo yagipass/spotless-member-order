@@ -93,20 +93,20 @@ class GradleConsumerTest {
     Files.writeString(
         initScript(),
         """
-                settingsEvaluated {
-                    pluginManagement.repositories {
-                        exclusiveContent {
-                            forRepository {
-                                maven("%s")
-                            }
-                            filter {
-                                includeModule("io.github.yagipass", "spotless-member-order")
-                            }
-                        }
-                        gradlePluginPortal()
+        settingsEvaluated {
+            pluginManagement.repositories {
+                exclusiveContent {
+                    forRepository {
+                        maven("%s")
+                    }
+                    filter {
+                        includeModule("io.github.yagipass", "spotless-member-order")
                     }
                 }
-                """
+                gradlePluginPortal()
+            }
+        }
+        """
             .formatted(Environment.repository().toUri()));
     return Fixtures.writeInput(project);
   }
