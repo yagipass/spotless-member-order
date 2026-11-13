@@ -139,28 +139,20 @@ final class MemberSorter {
 
   private static Category categoryOf(BodyDeclaration declaration) {
     boolean isStatic = Modifier.isStatic(declaration.getModifiers());
-    if (declaration instanceof AbstractTypeDeclaration) {
-      return Category.TYPE;
-    }
-    if (declaration instanceof FieldDeclaration) {
-      return isStatic || isInterfaceOrAnnotation(declaration.getParent())
-          ? Category.STATIC_FIELD
-          : Category.FIELD;
-    }
-    if (declaration instanceof Initializer) {
-      return isStatic ? Category.STATIC_INITIALIZER : Category.INITIALIZER;
-    }
-    if (declaration instanceof MethodDeclaration method && method.isConstructor()) {
-      return Category.CONSTRUCTOR;
-    }
-    if (declaration instanceof MethodDeclaration) {
-      return isStatic ? Category.STATIC_METHOD : Category.METHOD;
-    }
-    if (declaration instanceof AnnotationTypeMemberDeclaration) {
-      return Category.METHOD;
-    }
-    throw new IllegalStateException(
-        "Unexpected member declaration " + declaration.getClass().getName());
+    return switch (declaration) {
+      case AbstractTypeDeclaration type -> Category.TYPE;
+      case FieldDeclaration field ->
+          isStatic || isInterfaceOrAnnotation(field.getParent())
+              ? Category.STATIC_FIELD
+              : Category.FIELD;
+      case Initializer initializer -> isStatic ? Category.STATIC_INITIALIZER : Category.INITIALIZER;
+      case MethodDeclaration method when method.isConstructor() -> Category.CONSTRUCTOR;
+      case MethodDeclaration method -> isStatic ? Category.STATIC_METHOD : Category.METHOD;
+      case AnnotationTypeMemberDeclaration member -> Category.METHOD;
+      default ->
+          throw new IllegalStateException(
+              "Unexpected member declaration " + declaration.getClass().getName());
+    };
   }
 
   private static Visibility visibilityOf(BodyDeclaration declaration) {
