@@ -1,5 +1,41 @@
 # Changelog
 
+## [v0.3.1](https://github.com/yagipass/spotless-member-order/compare/v0.3.0...v0.3.1) - 2026-11-13
+
+### Dependencies
+- build(deps): bump the actions group with 2 updates by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/42
+- build(deps): bump gradle-wrapper from 9.8.1 to 9.8.2 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/53
+- build(deps): bump Songmu/tagpr from 1.21.2 to 1.21.3 in the actions group by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/54
+- build(deps): bump Songmu/tagpr from 1.21.3 to 1.21.4 in the actions group by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/64
+- build(deps): bump treefmt-nix from `27b3b12` to `0d6d739` in the flake-inputs group by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/63
+- build(deps): bump errorprone from 2.50.0 to 2.51.0 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/62
+- build(deps): bump com.uber.nullaway:nullaway from 0.14.2 to 0.14.3 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/61
+- build(deps): bump gradle/actions from 6.4.0 to 6.4.1 in the actions group by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/68
+- build(deps): bump nixpkgs from `d3b13ad` to `c4c49d9` in the flake-inputs group by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/67
+- build(deps): bump the actions group with 2 updates by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/69
+- build(deps): bump errorprone from 2.51.0 to 2.52.0 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/70
+- build(deps): bump com.diffplug.spotless:spotless-maven-plugin from 3.10.4 to 3.11.0 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/71
+- build(deps): bump net.ltgt.errorprone from 5.1.1 to 5.2.0 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/72
+- build(deps): bump com.diffplug.spotless:spotless-lib from 4.10.4 to 4.11.0 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/74
+- build(deps): bump the flake-inputs group with 3 updates by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/75
+- build(deps): bump com.diffplug.spotless from 8.10.4 to 8.11.0 by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/73
+### Other Changes
+- build: stop overlapping and hung workflow runs by @yagipass in https://github.com/yagipass/spotless-member-order/pull/31
+- build: publish without the Gradle cache and delay Dependabot updates by @yagipass in https://github.com/yagipass/spotless-member-order/pull/32
+- build: keep the Maven Central secrets in a main-only environment by @yagipass in https://github.com/yagipass/spotless-member-order/pull/34
+- build: queue release runs on main so that none of them is skipped by @yagipass in https://github.com/yagipass/spotless-member-order/pull/36
+- build: manage the repository settings with gh-infra by @yagipass in https://github.com/yagipass/spotless-member-order/pull/38
+- build: group the changelog by kind of change and bump minor for features by @yagipass in https://github.com/yagipass/spotless-member-order/pull/41
+- build: configure CodeRabbit reviews for this repository by @yagipass in https://github.com/yagipass/spotless-member-order/pull/44
+- build: put pre-commit on PATH in the nix develop shell by @yagipass in https://github.com/yagipass/spotless-member-order/pull/46
+- build: lint workflows with jactionlint instead of actionlint by @yagipass in https://github.com/yagipass/spotless-member-order/pull/48
+- build: keep CodeRabbit's summary out of pull request descriptions by @yagipass in https://github.com/yagipass/spotless-member-order/pull/52
+- build: configure cubic reviews for this repository by @yagipass in https://github.com/yagipass/spotless-member-order/pull/50
+- docs: say what a pull request title becomes and what tagpr writes by @yagipass in https://github.com/yagipass/spotless-member-order/pull/58
+- build: tighten the secret, workflow, and flake input checks by @yagipass in https://github.com/yagipass/spotless-member-order/pull/60
+- build: manage the maven-central environment with gh-infra by @yagipass in https://github.com/yagipass/spotless-member-order/pull/66
+- refactor: split up the order checks and categorize members in a switch by @yagipass in https://github.com/yagipass/spotless-member-order/pull/77
+
 ## [v0.3.0](https://github.com/yagipass/spotless-member-order/compare/v0.2.0...v0.3.0) - 2026-10-16
 
 - build(deps): bump nixpkgs from `73e728d` to `8edc0c7` by @dependabot[bot] in https://github.com/yagipass/spotless-member-order/pull/16
