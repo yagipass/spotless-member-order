@@ -51,37 +51,8 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
       seen.addAll(entry.visibilities());
       entries.add(entry);
     }
-    List<String> missing = new ArrayList<>();
-    for (Category category : Category.values()) {
-      if (FIELDS_OF_INITIALIZERS.containsKey(category)) {
-        continue;
-      }
-      Set<Visibility> unlisted = EnumSet.allOf(Visibility.class);
-      unlisted.removeAll(listed.getOrDefault(category, Set.of()));
-      if (!unlisted.isEmpty()) {
-        missing.add(describe(category, unlisted));
-      }
-    }
-    if (!missing.isEmpty()) {
-      throw invalid(order, "missing " + String.join(",", missing));
-    }
-    FIELDS_OF_INITIALIZERS.forEach((initializers, fields) -> {
-      boolean split =
-          entries.stream()
-                  .filter(entry ->
-                      entry instanceof CategoryEntry categoryEntry
-                          && categoryEntry.category() == fields)
-                  .count()
-              > 1;
-      if (split && !listed.containsKey(initializers)) {
-        throw invalid(
-            order,
-            fields.code()
-                + " is split by visibility, so "
-                + initializers.code()
-                + " must be listed to place the initializers");
-      }
-    });
+    rejectMissing(order, listed);
+    rejectUnplacedInitializers(order, entries, listed);
     return new MemberOrder(List.copyOf(entries));
   }
 
@@ -178,6 +149,44 @@ record MemberOrder(List<MemberOrder.Entry> entries) implements Serializable {
       }
       return new AnnotationEntry(name);
     }
+  }
+
+  private static void rejectMissing(String order, Map<Category, Set<Visibility>> listed) {
+    List<String> missing = new ArrayList<>();
+    for (Category category : Category.values()) {
+      if (FIELDS_OF_INITIALIZERS.containsKey(category)) {
+        continue;
+      }
+      Set<Visibility> unlisted = EnumSet.allOf(Visibility.class);
+      unlisted.removeAll(listed.getOrDefault(category, Set.of()));
+      if (!unlisted.isEmpty()) {
+        missing.add(describe(category, unlisted));
+      }
+    }
+    if (!missing.isEmpty()) {
+      throw invalid(order, "missing " + String.join(",", missing));
+    }
+  }
+
+  private static void rejectUnplacedInitializers(
+      String order, List<Entry> entries, Map<Category, Set<Visibility>> listed) {
+    FIELDS_OF_INITIALIZERS.forEach((initializers, fields) -> {
+      boolean split =
+          entries.stream()
+                  .filter(entry ->
+                      entry instanceof CategoryEntry categoryEntry
+                          && categoryEntry.category() == fields)
+                  .count()
+              > 1;
+      if (split && !listed.containsKey(initializers)) {
+        throw invalid(
+            order,
+            fields.code()
+                + " is split by visibility, so "
+                + initializers.code()
+                + " must be listed to place the initializers");
+      }
+    });
   }
 
   private static String describe(Category category, Collection<Visibility> visibilities) {
